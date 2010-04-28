@@ -73,6 +73,7 @@ typedef enum {
 + (BOOL)themeOverrideTimestampFormat;
 + (NSString*)themeTimestampFormat;
 + (double)themeTransparency;
++ (double)themeBlurRadius;
 
 + (int)dccFirstPort;
 + (void)setDccFirstPort:(int)value;

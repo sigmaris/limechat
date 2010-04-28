@@ -242,6 +242,12 @@
 	return [ud doubleForKey:@"Preferences.Theme.transparency"];
 }
 
++ (double)themeBlurRadius
+{
+	NSUserDefaults* ud = [NSUserDefaults standardUserDefaults];
+	return [ud doubleForKey:@"Preferences.Theme.blur_radius"];
+}
+
 #pragma mark -
 #pragma mark DCC Ports
 
@@ -786,6 +792,7 @@ static NSMutableArray* excludeWords;
 	[d setBool:NO forKey:@"Preferences.Theme.override_timestamp_format"];
 	[d setObject:@"%H:%M" forKey:@"Preferences.Theme.timestamp_format"];
 	[d setDouble:1 forKey:@"Preferences.Theme.transparency"];
+  [d setDouble:0 forKey:@"Preferences.Theme.blur_radius"];
 	[d setInt:1096 forKey:@"Preferences.Dcc.first_port"];
 	[d setInt:1115 forKey:@"Preferences.Dcc.last_port"];
 	[d setInt:300 forKey:@"Preferences.General.max_log_lines"];

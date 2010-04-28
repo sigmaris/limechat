@@ -44,6 +44,7 @@
 - (void)onSelectFont:(id)sender;
 - (void)onOverrideFontChanged:(id)sender;
 - (void)onChangedTransparency:(id)sender;
+- (void)onChangedBlur:(id)sender;
 
 @end
 

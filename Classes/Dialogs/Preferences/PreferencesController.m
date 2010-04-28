@@ -414,6 +414,11 @@
 	[self onLayoutChanged:nil];
 }
 
+- (void)onChangedBlur:(id)sender
+{
+	[self onLayoutChanged:nil];
+}
+
 #pragma mark -
 #pragma mark Actions
 

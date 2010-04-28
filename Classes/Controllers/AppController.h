@@ -14,6 +14,7 @@
 #import "DCCController.h"
 #import "GrowlController.h"
 #import "WelcomeDialog.h"
+#import "CGSPrivate.h"
 
 
 @interface AppController : NSObject
@@ -54,6 +55,8 @@
 	
 	BOOL threeColumns;
 	BOOL terminating;
+  
+	CGSWindowFilterRef fid;
 }
 
 @end

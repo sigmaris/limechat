@@ -11,6 +11,7 @@
 #import "NSPasteboardHelper.h"
 #import "NSStringHelper.h"
 #import "NSLocaleHelper.h"
+#import "CGSPrivate.h"
 
 
 #define KInternetEventClass	1196773964
@@ -31,6 +32,7 @@
 
 @interface AppController (Private)
 - (void)set3columnLayout:(BOOL)value;
+- (void)setBlur:(double)radius;
 - (void)loadWindowState;
 - (void)saveWindowState;
 - (void)registerKeyHandlers;
@@ -42,6 +44,12 @@
 
 - (void)dealloc
 {
+	if(fid)
+	{
+		CGSRemoveWindowFilter(_CGSDefaultConnection(), [window windowNumber], fid);
+		CGSReleaseCIFilter(_CGSDefaultConnection(), fid);
+		fid = NULL;
+	}
 	[welcomeDialog release];
 	[growl release];
 	[dcc release];
@@ -58,6 +66,8 @@
 
 - (void)awakeFromNib
 {
+	fid = NULL;
+
 	[self prelude];
 
 	[Preferences initPreferences];
@@ -195,6 +205,7 @@
 		[window makeKeyAndOrderFront:nil];
 		[world autoConnect:NO];
 	}
+	[self setBlur:[Preferences themeBlurRadius]];
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)note
@@ -445,6 +456,40 @@
 	}
 }
 
+-(void)setBlur:(double)radius
+{
+	if(radius > 0)
+	{
+		if (!fid)
+		{
+			CGError error = CGSNewCIFilterByName(_CGSDefaultConnection(), (CFStringRef)@"CIGaussianBlur", &fid);
+			if (noErr == error)
+			{
+				NSDictionary *optionsDict = [NSDictionary dictionaryWithObject:[NSNumber numberWithDouble:radius] forKey:@"inputRadius"];
+				error = CGSSetCIFilterValuesFromDictionary(_CGSDefaultConnection(), fid, (CFDictionaryRef)optionsDict);
+				if (noErr == error)
+				{
+					CGSAddWindowFilter(_CGSDefaultConnection(), [window windowNumber], fid, 0x00003001);
+				}
+			}
+		}
+		else
+		{
+			NSDictionary *optionsDict = [NSDictionary dictionaryWithObject:[NSNumber numberWithDouble:radius] forKey:@"inputRadius"];
+			CGError error = CGSSetCIFilterValuesFromDictionary(_CGSDefaultConnection(), fid, (CFDictionaryRef)optionsDict);
+		}
+	}
+	else
+	{
+		if (fid)
+		{
+			CGSRemoveWindowFilter(_CGSDefaultConnection(), [window windowNumber], fid);
+			CGSReleaseCIFilter(_CGSDefaultConnection(), fid);
+			fid = NULL;
+		}
+	}	 
+}
+
 #pragma mark -
 #pragma mark Preferences
 
@@ -511,6 +556,7 @@
 	[world reloadTheme];
 	[self set3columnLayout:[Preferences mainWindowLayout] == MAIN_WINDOW_LAYOUT_3_COLUMN];
 	[window setAlphaValue:[Preferences themeTransparency]];
+	[self setBlur:[Preferences themeBlurRadius]];
 }
 
 #pragma mark -
