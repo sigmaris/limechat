@@ -7,15 +7,14 @@
     <language>en-us</language>
 
     <item>
-      <title>2.15</title>
-      <link>http://limechat.net/mac/#v2.15</link>
-      <pubDate>Wed, 23 Jun 2010 19:46:01 +0900</pubDate>
+      <title>2.18</title>
+      <link>http://limechat.net/mac/#v2.18</link>
+      <pubDate>Sun, 20 Mar 2011 14:51:00 -0700</pubDate>
       <content:encoded><![CDATA[
   			<ul>
-          <li>Join a channel automatically when invited option.</li>
-          <li>Handle incomplete ISO-2022-JP sequences.</li>
-          <li>Cancel reconnection when disconnect from menu.</li>
-          <li>Fixed minor bugs.</li>
+          <li>Add flic.kr support to inline images.</li>
+          <li>Use smaller preview images to reduce memory usage.</li>
+          <li>Fixed crashing issues when received malformed image URLs.</li>
         </ul>
       ]]></content:encoded>
     </item>

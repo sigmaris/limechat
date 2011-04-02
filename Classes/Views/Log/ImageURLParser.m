@@ -10,19 +10,19 @@
 + (NSString*)imageURLForURL:(NSString*)url
 {
 	NSString* lowerUrl = [url lowercaseString];
-	
 	if ([lowerUrl hasSuffix:@".jpg"]
 		|| [lowerUrl hasSuffix:@".jpeg"]
 		|| [lowerUrl hasSuffix:@".png"]
-		|| [lowerUrl hasSuffix:@".gif"]) {
+		|| [lowerUrl hasSuffix:@".gif"]
+		|| [lowerUrl hasSuffix:@".svg"]) {
 		return url;
 	}
-	
+
 	NSString* encodedUrl = [url encodeURIFragment];
 	NSURL* u = [NSURL URLWithString:encodedUrl];
 	NSString* host = [u.host lowercaseString];
 	NSString* path = u.path;
-	
+
 	if ([host hasSuffix:@"twitpic.com"]) {
 		if (path.length > 1) {
 			NSString* s = [path substringFromIndex:1];
@@ -30,30 +30,25 @@
 				s = [s substringToIndex:s.length - 5];
 			}
 			if ([s isAlphaNumOnly]) {
-				return [NSString stringWithFormat:@"http://twitpic.com/show/large/%@", s];
+				return [NSString stringWithFormat:@"http://twitpic.com/show/mini/%@", s];
 			}
 		}
 	}
 	else if ([host hasSuffix:@"plixi.com"]) {
 		if (path.length > 1) {
-			return [NSString stringWithFormat:@"http://api.plixi.com/api/TPAPI.svc/imagefromurl?size=medium&url=%@", [url encodeURIComponent]];
-		}
-	}
-	else if ([host hasSuffix:@"tweetphoto.com"]) {
-		if (path.length > 1) {
-			return [NSString stringWithFormat:@"http://TweetPhotoAPI.com/api/TPAPI.svc/imagefromurl?size=medium&url=%@", [url encodeURIComponent]];
+			return [NSString stringWithFormat:@"http://api.plixi.com/api/TPAPI.svc/imagefromurl?size=thumbnail&url=%@", [url encodeURIComponent]];
 		}
 	}
 	else if ([host hasSuffix:@"yfrog.com"]) {
 		if (path.length > 1) {
-			return [NSString stringWithFormat:@"%@:iphone", url];
+			return [NSString stringWithFormat:@"%@:small", url];
 		}
 	}
 	else if ([host hasSuffix:@"twitgoo.com"]) {
 		if (path.length > 1) {
 			NSString* s = [path substringFromIndex:1];
 			if ([s isAlphaNumOnly]) {
-				return [NSString stringWithFormat:@"http://twitgoo.com/show/Img/%@", s];
+				return [NSString stringWithFormat:@"http://twitgoo.com/show/mini/%@", s];
 			}
 		}
 	}
@@ -61,15 +56,33 @@
 		if (path.length > 1) {
 			NSString* s = [path substringFromIndex:1];
 			if ([s isAlphaNumOnly]) {
-				return [NSString stringWithFormat:@"http://img.ly/show/large/%@", s];
+				return [NSString stringWithFormat:@"http://img.ly/show/mini/%@", s];
 			}
 		}
+	}
+	else if ([host isEqualToString:@"imgur.com"]) {
+		if ([path hasPrefix:@"/gallery/"]) {
+			NSString* s = [path substringFromIndex:9];
+			if ([s isAlphaNumOnly]) {
+				return [NSString stringWithFormat:@"http://i.imgur.com/%@s.jpg", s];
+			}
+		}
+		if (path.length > 1) {
+			NSString* s = [path substringFromIndex:1];
+			if ([s isAlphaNumOnly]) {
+				return [NSString stringWithFormat:@"http://i.imgur.com/%@s.jpg", s];
+			}
+		}
+	}
+	else if ([host hasSuffix:@"flic.kr"]) {
+		NSString* shortId = [path substringFromIndex:2];
+		return [NSString stringWithFormat:@"http://flic.kr/p/img/%@_m.jpg", shortId];
 	}
 	else if ([host hasSuffix:@"movapic.com"]) {
 		if ([path hasPrefix:@"/pic/"]) {
 			NSString* s = [path substringFromIndex:5];
 			if ([s isAlphaNumOnly]) {
-				return [NSString stringWithFormat:@"http://image.movapic.com/pic/m_%@.jpeg", s];
+				return [NSString stringWithFormat:@"http://image.movapic.com/pic/t_%@.jpeg", s];
 			}
 		}
 	}
@@ -97,6 +110,42 @@
 				NSString* photoIdHead = [photoId substringToIndex:8];
 				return [NSString stringWithFormat:@"http://img.f.hatena.ne.jp/images/fotolife/%@/%@/%@/%@.jpg", userIdHead, userId, photoIdHead, photoId];
 			}
+		}
+	}
+	else if ([host hasSuffix:@"pikubo.jp"]) {
+		if ([path hasPrefix:@"/photo/"] && path.length >= 29) {
+			path = [path substringWithRange:NSMakeRange(7, 22)];
+			return [NSString stringWithFormat:@"http://pikubo.jp/p/p/%@", path];
+		}
+	}
+	else if ([host hasSuffix:@"pikubo.me"]) {
+		if (path.length > 1) {
+			path = [path substringFromIndex:1];
+			return [NSString stringWithFormat:@"http://pikubo.me/p/%@", path];
+		}
+	}
+	else if ([host hasSuffix:@".ficia.com"]) {
+		int subdomainLen = host.length - 10;
+		if (subdomainLen > 0) {
+			NSString* user = [host substringToIndex:subdomainLen];
+			NSString* fragment = u.fragment;
+			if (path.length > 60) {
+				if ([path hasPrefix:@"/pl/album-photo/"]) {
+					NSString* s = [path substringFromIndex:53];
+					return [NSString stringWithFormat:@"http://%@.pst.ficia.com/p/%@.jpg", user, s];
+				}
+			}
+			else if (fragment.length > 60) {
+				if ([fragment hasPrefix:@"album-photo/"]) {
+					NSString* s = [fragment substringFromIndex:49];
+					return [NSString stringWithFormat:@"http://%@.pst.ficia.com/p/%@.jpg", user, s];
+				}
+			}
+		}
+	}
+	else if ([host hasSuffix:@"puu.sh"]) {
+		if (path.length > 1) {
+			return url;
 		}
 	}
 	else if ([host hasSuffix:@"youtube.com"] || [host isEqualToString:@"youtu.be"]) {
@@ -145,6 +194,7 @@
 	}
 	else if ([host hasSuffix:@"nicovideo.jp"] || [host isEqualToString:@"nico.ms"]) {
 		NSString* vid = nil;
+		NSString* iid = nil;
 		
 		if ([host isEqualToString:@"nico.ms"]) {
 			NSString* path = u.path;
@@ -152,6 +202,9 @@
 				path = [path substringFromIndex:1];
 				if ([path hasPrefix:@"sm"] || [path hasPrefix:@"nm"]) {
 					vid = path;
+				}
+				else if ([path hasPrefix:@"im"]) {
+					iid = path;
 				}
 			}
 		}
@@ -163,11 +216,21 @@
 					vid = path;
 				}
 			}
+			else if ([path hasPrefix:@"/seiga/"]) {
+				path = [path substringFromIndex:7];
+				if ([path hasPrefix:@"im"]) {
+					iid = path;
+				}
+			}
 		}
 		
 		if (vid && vid.length > 2) {
 			long long vidNum = [[vid substringFromIndex:2] longLongValue];
 			return [NSString stringWithFormat:@"http://tn-skr%qi.smilevideo.jp/smile?i=%qi", (vidNum%4 + 1), vidNum];
+		}
+		else if (iid && iid.length > 2) {
+			long long iidNum = [[iid substringFromIndex:2] longLongValue];
+			return [NSString stringWithFormat:@"http://lohas.nicoseiga.jp/thumb/%qiq?", iidNum];
 		}
 	}
 	

@@ -50,7 +50,8 @@
 
 - (id)init
 {
-	if (self = [super init]) {
+	self = [super init];
+	if (self) {
 		bottom = YES;
 		maxLines = 300;
 		lines = [NSMutableArray new];
@@ -438,32 +439,26 @@
 	BOOL isText = type == LINE_TYPE_PRIVMSG || type == LINE_TYPE_NOTICE || type == LINE_TYPE_ACTION;
 	BOOL showInlineImage = NO;
 
+	[s appendFormat:@"<span class=\"message\" type=\"%@\">%@", lineTypeString, body];
 	if (isText && !console && urlRanges.count && [Preferences showInlineImages]) {
 		//
 		// expand image URLs
 		//
-		NSString* imagePageUrl = nil;
 		NSString* imageUrl = nil;
 		
 		for (NSValue* rangeValue in urlRanges) {
 			NSString* url = [line.body substringWithRange:[rangeValue rangeValue]];
 			imageUrl = [ImageURLParser imageURLForURL:url];
 			if (imageUrl) {
-				imagePageUrl = url;
-				break;
+				if (!showInlineImage) {
+					[s appendString:@"<br/>"];
+				}
+				showInlineImage = YES;
+				[s appendFormat:@"<a href=\"%@\"><img src=\"%@\" class=\"inlineimage\"/></a>", url, imageUrl];
 			}
 		}
-		
-		if (imageUrl) {
-			showInlineImage = YES;
-			[s appendFormat:@"<span class=\"message\" type=\"%@\">%@<br/>", lineTypeString, body];
-			[s appendFormat:@"<a href=\"%@\"><img src=\"%@\" class=\"inlineimage\"/></a></span>", imagePageUrl, imageUrl];
-		}
 	}
-	
-	if (!showInlineImage) {
-		[s appendFormat:@"<span class=\"message\" type=\"%@\">%@</span>", lineTypeString, body];
-	}
+	[s appendString:@"</span>"];
 
 	NSString* klass = isText ? @"line text" : @"line event";
 	
@@ -617,9 +612,7 @@
 		@"}"
 	 
 		@".inlineimage {"
-		@"margin-top: 10px;"
-		@"margin-bottom: 15px;"
-		@"margin-left: 40px;"
+		@"margin: 10px 0 15px 40px;"
 		@"max-width: 200px;"
 		@"max-height: 150px;"
 		@"-webkit-box-shadow: 2px 2px 2px #888;"
@@ -730,7 +723,8 @@
 		
 		scroller = [[MarkedScroller alloc] initWithFrame:NSMakeRect(-16, -64, 16, 64)];
 		scroller.dataSource = self;
-		[scroller setFloatValue:[old floatValue] knobProportion:[old knobProportion]];
+		[scroller setFloatValue:[old floatValue]];
+		[scroller setKnobProportion:[old knobProportion]];
 		[scrollView setVerticalScroller:scroller];
 	}
 }

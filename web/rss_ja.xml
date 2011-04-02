@@ -7,15 +7,14 @@
     <language>ja</language>
 
     <item>
-      <title>2.15</title>
-      <link>http://limechat.net/mac/ja.html#v2.15</link>
-      <pubDate>Wed, 23 Jun 2010 19:46:01 +0900</pubDate>
+      <title>2.18</title>
+      <link>http://limechat.net/mac/ja.html#v2.18</link>
+      <pubDate>Sun, 20 Mar 2011 14:51:00 -0700</pubDate>
       <content:encoded><![CDATA[
   			<ul>
-          <li>招待されたら自動でjoinするオプションを追加した。</li>
-          <li>ISO-2022-JP のシーケンスが途中で切れている場合に対応した。</li>
-          <li>メニューから切断すると、どんなときでも再接続しないようにした。</li>
-          <li>細かいバグをfixした。</li>
+          <li>インライン画像プレビューで flic.kr をサポート。</li>
+          <li>メモリの消費を抑えるため、インライン画像プレビューに小さい画像を使うようにした。</li>
+          <li>不正な画像URLを受信したときに、落ちるバグを fix した。</li>
         </ul>
       ]]></content:encoded>
     </item>

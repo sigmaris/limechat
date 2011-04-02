@@ -34,7 +34,8 @@
 
 - (id)init
 {
-	if (self = [super init]) {
+	self = [super init];
+	if (self) {
 		[NSBundle loadNibNamed:@"ServerDialog" owner:self];
 		
 		NSArray* servers = [[self class] availableServers];
@@ -613,8 +614,6 @@
 		else {
 			[servers addObject:@"chat.freenode.net (freenode)"];
 			[servers addObject:@"irc.efnet.net (EFnet)"];
-			[servers addObject:@"irc.us.ircnet.net (IRCnet)"];
-			[servers addObject:@"irc.fr.ircnet.net (IRCnet)"];
 			[servers addObject:@"us.undernet.org (Undernet)"];
 			[servers addObject:@"eu.undernet.org (Undernet)"];
 			[servers addObject:@"irc.quakenet.org (QuakeNet)"];

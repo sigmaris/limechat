@@ -174,6 +174,7 @@
 	menu.tree = tree;
 	menu.memberList = memberList;
 	menu.text = text;
+	[menu setUp];
 	
 	memberList.target = menu;
 	[memberList setDoubleAction:@selector(memberListDoubleClicked:)];
@@ -617,23 +618,23 @@
 		}
 	}
 	
-	if (!pre.length) return;
-	
 	BOOL commandMode = NO;
 	BOOL twitterMode = NO;
 	
-	UniChar c = [pre characterAtIndex:0];
-	if (head && c == '/') {
-		// command mode
-		commandMode = YES;
-		pre = [pre substringFromIndex:1];
-		if (!pre.length) return;
-	}
-	else if (c == '@') {
-		// workaround for @nick form
-		twitterMode = YES;
-		pre = [pre substringFromIndex:1];
-		if (!pre.length) return;
+	if (pre.length) {
+		UniChar c = [pre characterAtIndex:0];
+		if (head && c == '/') {
+			// command mode
+			commandMode = YES;
+			pre = [pre substringFromIndex:1];
+			if (!pre.length) return;
+		}
+		else if (c == '@') {
+			// workaround for @nick form
+			twitterMode = YES;
+			pre = [pre substringFromIndex:1];
+			if (!pre.length) return;
+		}
 	}
 	
 	// prepare for matching
@@ -651,8 +652,8 @@
 			break;
 		}
 	}
-
-	if (!current.length) return;
+	
+	if (!current.length && (commandMode || twitterMode)) return;
 
 	// sort the choices
 	
@@ -661,6 +662,8 @@
 	
 	NSArray* lowerChoices;
 	NSArray* choices;
+	
+	CGFloat firstUserWeight = 0;
 	
 	if (commandMode) {
 		choices = [NSArray arrayWithObjects:
@@ -683,8 +686,13 @@
 		NSMutableArray* nicks = [NSMutableArray array];
 		NSMutableArray* lowerNicks = [NSMutableArray array];
 		
+		BOOL seenFirstUser = NO;
 		for (IRCUser* m in users) {
 			if (!m.isMyself) {
+				if (!seenFirstUser) {
+					seenFirstUser = YES;
+					firstUserWeight = m.weight;
+				}
 				[nicks addObject:m.nick];
 				[lowerNicks addObject:m.canonicalNick];
 			}
@@ -706,6 +714,18 @@
 		++i;
 	}
 
+	// If we're trying to complete a half-entered string, and we can't find a
+	// choice with a common prefix, there is nothing more to be done.
+	// Otherwise, pick the user with the highest weight.
+	if (!currentChoices.count) {
+		if (current.length) return;
+		if (!commandMode && !twitterMode && firstUserWeight > 0) {
+			NSString* firstChoice = [choices objectAtIndex:0];
+			[currentChoices addObject:firstChoice];
+			[currentLowerChoices addObject:[firstChoice lowercaseString]];
+		}
+	}
+	
 	if (!currentChoices.count) return;
 	
 	// find the next choice
