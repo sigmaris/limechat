@@ -49,7 +49,7 @@
 - (void)onInputSelectFont:(id)sender;
 - (void)onOverrideFontChanged:(id)sender;
 - (void)onChangedTransparency:(id)sender;
-- (void)onChangedBlur:(id)sender;
+- (IBAction)onChangedBlur:(id)sender;
 
 @end
 

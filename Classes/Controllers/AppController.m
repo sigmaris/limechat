@@ -474,14 +474,14 @@
 				error = CGSSetCIFilterValuesFromDictionary(_CGSDefaultConnection(), fid, (CFDictionaryRef)optionsDict);
 				if (noErr == error)
 				{
-					CGSAddWindowFilter(_CGSDefaultConnection(), [window windowNumber], fid, 0x00003001);
+					CGSAddWindowFilter(_CGSDefaultConnection(), [window windowNumber], fid, 1);
 				}
 			}
 		}
 		else
 		{
 			NSDictionary *optionsDict = [NSDictionary dictionaryWithObject:[NSNumber numberWithDouble:radius] forKey:@"inputRadius"];
-			CGError error = CGSSetCIFilterValuesFromDictionary(_CGSDefaultConnection(), fid, (CFDictionaryRef)optionsDict);
+			CGSSetCIFilterValuesFromDictionary(_CGSDefaultConnection(), fid, (CFDictionaryRef)optionsDict);
 		}
 	}
 	else
